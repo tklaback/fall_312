@@ -1,4 +1,5 @@
 from which_pyqt import PYQT_VER
+from hull_ds import divide_and_conquer
 if PYQT_VER == 'PYQT5':
 	from PyQt5.QtCore import QLineF, QPointF, QObject
 elif PYQT_VER == 'PYQT4':
@@ -65,14 +66,25 @@ class ConvexHullSolver(QObject):
 		assert( type(points) == list and type(points[0]) == QPointF )
 
 		t1 = time.time()
-		# TODO: SORT THE POINTS BY INCREASING X-VALUE
+		sorted_points = sorted(points, key=lambda x: x.x()) # timsort takes O(nlogn) time
 		t2 = time.time()
 
 		t3 = time.time()
-		# this is a dummy polygon of the first 3 unsorted points
-		polygon = [QLineF(points[i],points[(i+1)%3]) for i in range(3)]
-		# TODO: REPLACE THE LINE ABOVE WITH A CALL TO YOUR DIVIDE-AND-CONQUER CONVEX HULL SOLVER
+
+		completed_hull = divide_and_conquer(sorted_points) # O(n^2)
+
+		# total => sort + divide_and_conquer = O(nlogn + n^2) => O(n^2)
+
 		t4 = time.time()
+
+		polygon = []
+		first = completed_hull.leftmost
+		cur_node = first.cw
+		while cur_node != first:
+			polygon.append(QLineF(cur_node.value, cur_node.cw.value))
+			cur_node = cur_node.cw
+		
+		polygon.append(QLineF(first.value, first.cw.value))
 
 		# when passing lines to the display, pass a list of QLineF objects.  Each QLineF
 		# object can be created with two QPointF objects corresponding to the endpoints
