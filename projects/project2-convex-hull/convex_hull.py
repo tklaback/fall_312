@@ -69,6 +69,7 @@ class ConvexHullSolver(QObject):
 		sorted_points = sorted(points, key=lambda x: x.x()) # timsort takes O(nlogn) time
 		t2 = time.time()
 
+
 		t3 = time.time()
 
 		completed_hull = divide_and_conquer(sorted_points) # O(n^2)
@@ -89,4 +90,4 @@ class ConvexHullSolver(QObject):
 		# when passing lines to the display, pass a list of QLineF objects.  Each QLineF
 		# object can be created with two QPointF objects corresponding to the endpoints
 		self.showHull(polygon,RED)
-		self.showText('Time Elapsed (Convex Hull): {:3.3f} sec'.format(t4-t3))
+		self.showText('Time Elapsed (Convex Hull): {:3.5f} sec'.format(t4-t3))
