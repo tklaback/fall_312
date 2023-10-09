@@ -74,8 +74,6 @@ class ConvexHullSolver(QObject):
 
 		completed_hull = divide_and_conquer(sorted_points) # O(n^2)
 
-		# total => sort + divide_and_conquer = O(nlogn + n^2) => O(n^2)
-
 		t4 = time.time()
 
 		polygon = []

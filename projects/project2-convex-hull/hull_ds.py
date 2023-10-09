@@ -11,9 +11,6 @@ class Hull:
     def __init__(self, start_node: HullNode) -> None:
         self.rightmost: HullNode = start_node
         self.leftmost: HullNode = start_node
-        self.size = 1
-
-
 
 def divide_and_conquer(arr):
     middle = len(arr) // 2
@@ -34,83 +31,86 @@ def divide_and_conquer(arr):
 def get_slope(startCoord: QPointF, endCoord: QPointF):
     return ((endCoord.y() - startCoord.y()) / (endCoord.x() - startCoord.x()))
 
+def get_upper_tangent(l_node: HullNode, r_node: HullNode):
+    
+    cur_slope = get_slope(l_node.value, r_node.value)
+    
+    while True:
+        modL = False
+        modR = False
+        while get_slope(l_node.ccw.value, r_node.value) < cur_slope:
+            # Worst case here: checking every right node against every left node.
+            # So, for each node on the left (n/2 nodes) I have to check against 
+            # each side on the right, making this a total of (n/2) * (n/2) => n^2 work.
+            l_node = l_node.ccw
+            cur_slope = get_slope(l_node.value, r_node.value)
+            modL = True
+
+        while get_slope(l_node.value, r_node.cw.value) > cur_slope:
+            # n^2 work.
+            r_node = r_node.cw
+            cur_slope = get_slope(l_node.value, r_node.value)
+            modR = True
+        
+        if not modR and not modL:
+            break
+
+    return l_node, r_node
+
+def get_lower_tangent(l_node: HullNode, r_node: HullNode):
+    cur_slope = get_slope(l_node.value, r_node.value)
+
+    while True:
+        modR = False
+        modL = False
+        while get_slope(l_node.cw.value, r_node.value) > cur_slope:
+            # n^2 work
+            l_node = l_node.cw
+            cur_slope = get_slope(l_node.value, r_node.value)
+            modL = True
+
+        while get_slope(l_node.value, r_node.ccw.value) < cur_slope:
+            # n^2 work
+            r_node = r_node.ccw
+            cur_slope = get_slope(l_node.value, r_node.value)
+            modR = True
+        
+        if not modR and not modL:
+            break
+    
+    return l_node, r_node
+
 
 def merge(left_hull: Hull, right_hull: Hull):
         
     l_node = left_hull.rightmost
     r_node = right_hull.leftmost
-
-    if left_hull.size == 1 and right_hull.size == 1:
-        l_node.cw = r_node
-        l_node.ccw = r_node
-        r_node.ccw = l_node
-        r_node.cw = l_node
-        left_hull.rightmost = right_hull.rightmost
-        left_hull.size += right_hull.size
-
-        return left_hull
-        
     
-    cur_slope = get_slope(l_node.value, r_node.value)
-
-    while get_slope(l_node.ccw.value, r_node.value) < cur_slope:
-        l_node = l_node.ccw
-        cur_slope = get_slope(l_node.value, r_node.value)
-        
-
-    while get_slope(l_node.value, r_node.cw.value) > cur_slope:
-        # Worst case here: checking every right node against every left node.
-        # So, for each node on the left (worst case n/2 nodes) I have to check against 
-        # each side on the right, making this a total of (n/2) * (n/2) => n^2 work.
-        # n^2 work.
-        r_node = r_node.cw
-        cur_slope = get_slope(l_node.value, r_node.value)
-        while get_slope(l_node.ccw.value, r_node.value) < cur_slope:
-            l_node = l_node.ccw
-            cur_slope = get_slope(l_node.value, r_node.value)
-
     # upper tangent found, now make the left node cw r_node and right node ccw l node.
-    left_top_tangent = l_node
-    right_top_tangent = r_node
+    left_top_tangent, right_top_tangent = get_upper_tangent(l_node, r_node)
 
     # Reset l_node and r_node to begin looking for lower tangent
-    l_node = left_hull.rightmost
-    r_node = right_hull.leftmost
-    
-    cur_slope = get_slope(l_node.value, r_node.value)
 
-    while get_slope(l_node.cw.value, r_node.value) > cur_slope:
-        # n^2 work
-        l_node = l_node.cw
-        cur_slope = get_slope(l_node.value, r_node.value)
-        
+    left_lower_tangent, right_lower_tangent = get_lower_tangent(l_node, r_node)
 
-    while get_slope(l_node.value, r_node.ccw.value) < cur_slope:
-        # n^2 work
-        r_node = r_node.ccw
-        cur_slope = get_slope(l_node.value, r_node.value)
-        while get_slope(l_node.cw.value, r_node.value) > cur_slope:
-            l_node = l_node.cw
-            cur_slope = get_slope(l_node.value, r_node.value)
-
+    #delete the in between nodes
     right_top_tangent.ccw = left_top_tangent
     left_top_tangent.cw = right_top_tangent
-    l_node.ccw = r_node
-    r_node.cw = l_node
+    left_lower_tangent.ccw = right_lower_tangent
+    right_lower_tangent.cw = left_lower_tangent
 
     left_hull.rightmost = right_hull.rightmost
-    left_hull.size += right_hull.size
-
-    # Total time: 4 * n^2 => n^2
 
     return left_hull
 
 
+# arr = [QPointF(4, 7), QPointF(5, -4), QPointF(-5, 1), QPointF(-2, 6), QPointF(6, 2), QPointF(0.0, 0.0)]
 
-# Overall the divide and conquer mixed with the merge:
-# a = 2
-# b = 2
-# d = 2
-# work to combine = n^2
-# Master theorem: 2T(n/2) + O(n^2)
-# So, 2/(2^2) = 1/4 < 1, thus the time it takes to do this is O(n^2)
+# hull = divide_and_conquer(sorted(arr, key=lambda x: x.x()))
+# pass
+
+# poly.get_convex_hull()
+
+
+        
+
