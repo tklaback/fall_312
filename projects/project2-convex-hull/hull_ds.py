@@ -39,15 +39,11 @@ def get_upper_tangent(l_node: HullNode, r_node: HullNode):
         modL = False
         modR = False
         while get_slope(l_node.ccw.value, r_node.value) < cur_slope:
-            # Worst case here: checking every right node against every left node.
-            # So, for each node on the left (n/2 nodes) I have to check against 
-            # each side on the right, making this a total of (n/2) * (n/2) => n^2 work.
             l_node = l_node.ccw
             cur_slope = get_slope(l_node.value, r_node.value)
             modL = True
 
         while get_slope(l_node.value, r_node.cw.value) > cur_slope:
-            # n^2 work.
             r_node = r_node.cw
             cur_slope = get_slope(l_node.value, r_node.value)
             modR = True
@@ -64,13 +60,11 @@ def get_lower_tangent(l_node: HullNode, r_node: HullNode):
         modR = False
         modL = False
         while get_slope(l_node.cw.value, r_node.value) > cur_slope:
-            # n^2 work
             l_node = l_node.cw
             cur_slope = get_slope(l_node.value, r_node.value)
             modL = True
 
         while get_slope(l_node.value, r_node.ccw.value) < cur_slope:
-            # n^2 work
             r_node = r_node.ccw
             cur_slope = get_slope(l_node.value, r_node.value)
             modR = True
