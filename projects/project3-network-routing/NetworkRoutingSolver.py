@@ -3,6 +3,7 @@
 
 from CS312Graph import *
 import time
+from heap import Array
 
 
 class NetworkRoutingSolver:
@@ -37,6 +38,19 @@ class NetworkRoutingSolver:
         # TODO: RUN DIJKSTRA'S TO DETERMINE SHORTEST PATHS.
         #       ALSO, STORE THE RESULTS FOR THE SUBSEQUENT
         #       CALL TO getShortestPath(dest_index)
+
+        if not use_heap:
+            array_pq = Array()
+            array_pq.make_queue(self.network, srcIndex)
+
+            u: CS312GraphNode = array_pq.delete_min()
+            while array_pq.size != 0 and array_pq.get_dist(u) != float('inf'):
+                for each_edge in u.neighbors:
+                    if array_pq.get_dist(each_edge.dest) > array_pq.get_dist(each_edge.src) + each_edge.length:
+                        array_pq.set_dist(each_edge.dest, array_pq.get_dist(each_edge.src) + each_edge.length)
+                        array_pq.set_prev(each_edge.dest, each_edge.src)
+                
+                u = array_pq.delete_min()
         t2 = time.time()
         return (t2-t1)
 

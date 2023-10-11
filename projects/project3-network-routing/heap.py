@@ -1,6 +1,5 @@
 from typing import Dict, List, Tuple
 from CS312Graph import CS312GraphNode
-import sys
 
 class Heap:
 
@@ -17,11 +16,12 @@ class Heap:
         pass
 
 
-class Array(Heap):
+class Array:
     def __init__(self) -> None:
         self._node_to_priority: Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]] = {}
         # dictionary maps nodes to their distance, whether they have been visited, and their parent node
         self.cur_min: List[CS312GraphNode, int] = [None, float('inf')]
+        self.size: int = 0
 
 
     def make_queue(self, arr: List[CS312GraphNode], startNode: CS312GraphNode):
@@ -29,6 +29,7 @@ class Array(Heap):
         for node in arr:
             if node == startNode: self._node_to_priority[node] = tuple([0, False, None])
             else: self._node_to_priority[node] = tuple([float('inf'), False])
+            self.size += 1
 
     def delete_min(self) -> CS312GraphNode:
         for node in self._node_to_priority:
@@ -37,13 +38,22 @@ class Array(Heap):
 
         min_node =  self.cur_min[0]
         self._node_to_priority[min_node][1] = True
+        self.size -= 1
         self.cur_min = [None, float("inf")]
 
         return min_node
     
-    def change_key(self, node: CS312GraphNode, new_dist: int):
-        self._node_to_priority[node][0] = new_dist
+    # def decrease_key(self, node: CS312GraphNode, new_dist: int) -> None:
+    #     self._node_to_priority[node][0] = new_dist
+
+    def get_dist(self, node: CS312GraphNode) -> int:
+        return self._node_to_priority[node][0]
     
+    def set_dist(self, node: CS312GraphNode, dist: int) -> None:
+        self._node_to_priority[node][0] = dist
+    
+    def set_prev(self, node: CS312GraphNode, prev: CS312GraphNode) -> None:
+        self._node_to_priority[node][2] = prev
 
     
 
