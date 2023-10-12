@@ -36,24 +36,22 @@ class Array(Heap):
             if node == startNode: self._node_to_priority[node] = [0, False, None]
             else: self._node_to_priority[node] = [float('inf'), False, None]
             self.size += 1
-
-    def delete_min(self) -> CS312GraphNode:
-        cur_min: List[CS312GraphNode, int] = [None, float('inf')]
-        for node in self._node_to_priority:
-            if self._node_to_priority[node][0] < cur_min[1] and not self._node_to_priority[node][1]:
-                cur_min = [node, self._node_to_priority[node][0]]
-
-        min_node =  cur_min[0]
-        if min_node == None:
-            return
-        self._node_to_priority[min_node][1] = True
-        self.size -= 1
-        cur_min = [None, float("inf")]
-
-        return min_node
     
-    # def decrease_key(self, node: CS312GraphNode, new_dist: int) -> None:
-    #     self._node_to_priority[node][0] = new_dist
+    def delete_min(self) -> CS312GraphNode:
+        cur_min = float('inf')
+        final_node = None
+        for node in self._node_to_priority:
+            if self._node_to_priority[node][0] < cur_min and not self._node_to_priority[node][1]:
+                final_node = node
+                cur_min = self._node_to_priority[node][0]
+
+        if final_node == None:
+            return
+        self._node_to_priority[final_node][1] = True
+        self.size -= 1
+
+        return final_node
+
 
     def get_dist(self, node: CS312GraphNode) -> int:
         return self._node_to_priority[node][0]
