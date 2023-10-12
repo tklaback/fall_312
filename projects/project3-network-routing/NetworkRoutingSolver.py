@@ -3,12 +3,12 @@
 
 from CS312Graph import *
 import time
-from heap import Array
+from heap import Array, BinaryHeap
 
 
 class NetworkRoutingSolver:
     def __init__( self):
-        self.array_pq = Array()
+        self.pq = None
 
     def initializeNetwork( self, network ):
         assert( type(network) == CS312Graph )
@@ -24,22 +24,21 @@ class NetworkRoutingSolver:
     
         path_edges = []
 
-        print(self.network.getNodes()[destIndex])
         nodes = self.network.getNodes()
-        shortest_map = self.array_pq.get_q()
+        # shortest_map = self.array_pq.get_q()
 
         cur_node = nodes[destIndex]
-        total_length = shortest_map[cur_node][0]
+        total_length = self.pq.get_length(cur_node)
 
-        while shortest_map[cur_node][0] != 0:
-            prev = shortest_map[cur_node][2]
+        while self.pq.get_parent(cur_node):
+            prev = self.pq.get_parent(cur_node)
             for e in prev.neighbors:
                 if e.dest == cur_node:
                     edge = e
                     break
 
-            path_edges.append((cur_node.loc, shortest_map[cur_node][2].loc, '{:.0f}'.format(edge.length))) #,' {:.0f}'.format(edge.length)))
-            cur_node = shortest_map[cur_node][2] # tuple of int, bool and CS312GraphNode
+            path_edges.append((cur_node.loc, self.pq.get_parent(cur_node).loc, '{:.0f}'.format(edge.length))) #,' {:.0f}'.format(edge.length)))
+            cur_node = self.pq.get_parent(cur_node) # tuple of int, bool and CS312GraphNode
             
         # node = self.network.nodes[self.source]
         # edges_left = 3
@@ -59,17 +58,17 @@ class NetworkRoutingSolver:
         #       CALL TO getShortestPath(dest_index)
 
         if not use_heap or use_heap:
-            
-            self.array_pq.make_queue(self.network.getNodes(), self.network.getNodes()[srcIndex])
+            self.pq = Array()
+            self.pq.make_queue(self.network.getNodes(), self.network.getNodes()[srcIndex])
 
-            u: CS312GraphNode = self.array_pq.delete_min()
+            u: CS312GraphNode = self.pq.delete_min()
             while u:
                 for each_edge in u.neighbors:
-                    if self.array_pq.get_dist(each_edge.dest) > self.array_pq.get_dist(each_edge.src) + each_edge.length:
-                        self.array_pq.set_dist(each_edge.dest, self.array_pq.get_dist(each_edge.src) + each_edge.length)
-                        self.array_pq.set_prev(each_edge.dest, each_edge.src)
+                    if self.pq.get_dist(each_edge.dest) > self.pq.get_dist(each_edge.src) + each_edge.length:
+                        self.pq.set_dist(each_edge.dest, self.pq.get_dist(each_edge.src) + each_edge.length)
+                        self.pq.set_prev(each_edge.dest, each_edge.src)
                 
-                u = self.array_pq.delete_min()
+                u = self.pq.delete_min()
         t2 = time.time()
         return (t2-t1)
 

@@ -1,22 +1,20 @@
 from typing import Dict, List, Tuple
+
 from CS312Graph import CS312GraphNode
 
 class Heap:
 
-    def decrease_key(self, vert: CS312GraphNode) -> None:
+    def is_min(self, vert: CS312GraphNode) -> bool:
         pass
 
-    def insert(self, vert: CS312GraphNode) -> None:
+    def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
         pass
 
-    def make_queue(self, arr: List[CS312GraphNode] ) -> 'Heap':
-        pass
-
-    def pop(self) -> CS312GraphNode:
+    def get_length(self, vert: CS312GraphNode) -> float:
         pass
 
 
-class Array:
+class Array(Heap):
     def __init__(self) -> None:
         self._node_to_priority: Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]] = {}
         # dictionary maps nodes to their distance, whether they have been visited, and their parent node
@@ -59,7 +57,15 @@ class Array:
 
     def get_q(self) -> Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]]:
         return self._node_to_priority
-
+    
+    def is_min(self, vert: CS312GraphNode) -> bool:
+        return self._node_to_priority[vert][0] == 0
+            
+    def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
+        return self._node_to_priority[vert][2]
+    
+    def get_length(self, vert: CS312GraphNode) -> float:
+        return self._node_to_priority[vert][0]
 
 class BinaryHeap(Heap):
 
@@ -122,3 +128,15 @@ class BinaryHeap(Heap):
         if self._heap[2 * cur_idx + 2] > self._heap[2 * cur_idx + 1]:
             return 2 * cur_idx + 1
         return 2 * cur_idx + 2
+    
+    def is_min(self, vert: CS312GraphNode) -> bool:
+        return self._pointer_array[vert] == 0
+    
+    def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
+        idx = self._pointer_array[vert]
+        if idx != 0:
+            return self._heap[(idx - 1) // 2]
+        return None
+    
+    def get_length(self, vert: CS312GraphNode) -> float:
+        return self._node_to_priority[vert]
