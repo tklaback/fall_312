@@ -57,18 +57,23 @@ class NetworkRoutingSolver:
         #       ALSO, STORE THE RESULTS FOR THE SUBSEQUENT
         #       CALL TO getShortestPath(dest_index)
 
-        if not use_heap or use_heap:
+        if not use_heap:
             self.pq = Array()
-            self.pq.make_queue(self.network.getNodes(), self.network.getNodes()[srcIndex])
+        else:
+            self.pq = BinaryHeap()
 
-            u: CS312GraphNode = self.pq.delete_min()
-            while u:
-                for each_edge in u.neighbors:
-                    if self.pq.get_dist(each_edge.dest) > self.pq.get_dist(each_edge.src) + each_edge.length:
-                        self.pq.set_dist(each_edge.dest, self.pq.get_dist(each_edge.src) + each_edge.length)
-                        self.pq.set_prev(each_edge.dest, each_edge.src)
-                
-                u = self.pq.delete_min()
+        self.pq.make_queue(self.network.getNodes(), self.network.getNodes()[srcIndex])
+
+        u: CS312GraphNode = self.pq.delete_min()
+        while u:
+            for each_edge in u.neighbors:
+                if self.pq.get_dist(each_edge.dest) > self.pq.get_dist(each_edge.src) + each_edge.length:
+                    self.pq.set_dist(each_edge.dest, self.pq.get_dist(each_edge.src) + each_edge.length)
+                    self.pq.set_prev(each_edge.dest, each_edge.src)
+
+                    self.pq.decrease_key(each_edge.dest)
+            
+            u = self.pq.delete_min()
         t2 = time.time()
         return (t2-t1)
 

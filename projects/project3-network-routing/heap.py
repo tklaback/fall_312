@@ -12,6 +12,18 @@ class Heap:
 
     def get_length(self, vert: CS312GraphNode) -> float:
         pass
+    
+    def get_dist(self, node: CS312GraphNode) -> int:
+        pass
+    
+    def set_dist(self, node: CS312GraphNode, dist: int) -> None:
+        pass
+    
+    def set_prev(self, node: CS312GraphNode, prev: CS312GraphNode) -> None:
+        pass
+
+    def decrease_key(self, vert: CS312GraphNode) -> None:
+        pass
 
 
 class Array(Heap):
@@ -91,7 +103,7 @@ class BinaryHeap(Heap):
         self._perc_up(len(self._heap) - 1)
     
     def _perc_up(self, cur_idx: int) -> None:
-        while (cur_idx - 1) >= 0:
+        while (cur_idx - 1) // 2 >= 0:
             parent_idx = (cur_idx - 1) // 2
             if self._node_to_priority[self._heap[parent_idx]] > self._node_to_priority[self._heap[cur_idx]]:
                 self._heap[cur_idx], self._heap[parent_idx] = \
@@ -102,11 +114,13 @@ class BinaryHeap(Heap):
 
     def delete_min(self) -> CS312GraphNode:
         return_node = self._heap[0]
-        self._heap[0] = self._heap[-1]
-        self._perc_down(0)
+        new_node: CS312GraphNode = self._heap.pop()
+        self._heap[0] = new_node
+        new_idx: int = self._perc_down(0)
+        self._pointer_array[new_node] = new_idx
         return return_node
     
-    def _perc_down(self, cur_idx: int) -> None:
+    def _perc_down(self, cur_idx: int) -> int:
         while 2 * cur_idx + 1 < len(self._heap):
             small_side: int = self._get_min_child(cur_idx)
 
@@ -117,15 +131,16 @@ class BinaryHeap(Heap):
 
             cur_idx = small_side
 
-    def decrease_key(self, vert: CS312GraphNode, new_key: int) -> None:
-        self._node_to_priority[vert] = new_key
+        return cur_idx
+
+    def decrease_key(self, vert: CS312GraphNode) -> None:
         cur_idx = self._pointer_array[vert]
         self._perc_up(cur_idx)
 
     def _get_min_child(self, cur_idx: int) -> int:
         if 2 * cur_idx + 2 > len(self._heap) - 1:
             return 2 * cur_idx + 1
-        if self._heap[2 * cur_idx + 2] > self._heap[2 * cur_idx + 1]:
+        if self._node_to_priority[self._heap[2 * cur_idx + 2]] > self._node_to_priority[self._heap[2 * cur_idx + 1]]:
             return 2 * cur_idx + 1
         return 2 * cur_idx + 2
     
@@ -140,3 +155,9 @@ class BinaryHeap(Heap):
     
     def get_length(self, vert: CS312GraphNode) -> float:
         return self._node_to_priority[vert]
+    
+    def get_dist(self, node: CS312GraphNode) -> int:
+        return self._node_to_priority[node]
+    
+    def set_dist(self, node: CS312GraphNode, dist: int) -> None:
+        self._node_to_priority[node] = dist
