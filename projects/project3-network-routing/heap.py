@@ -20,7 +20,6 @@ class Array:
     def __init__(self) -> None:
         self._node_to_priority: Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]] = {}
         # dictionary maps nodes to their distance, whether they have been visited, and their parent node
-        self.cur_min: List[CS312GraphNode, int] = [None, float('inf')]
         self.size: int = 0
 
 
@@ -32,16 +31,17 @@ class Array:
             self.size += 1
 
     def delete_min(self) -> CS312GraphNode:
+        cur_min: List[CS312GraphNode, int] = [None, float('inf')]
         for node in self._node_to_priority:
-            if self._node_to_priority[node][0] < self.cur_min[1] and not self._node_to_priority[node][1]:
-                self.cur_min = [node, self._node_to_priority[node][0]]
+            if self._node_to_priority[node][0] < cur_min[1] and not self._node_to_priority[node][1]:
+                cur_min = [node, self._node_to_priority[node][0]]
 
-        min_node =  self.cur_min[0]
+        min_node =  cur_min[0]
         if min_node == None:
             return
         self._node_to_priority[min_node][1] = True
         self.size -= 1
-        self.cur_min = [None, float("inf")]
+        cur_min = [None, float("inf")]
 
         return min_node
     
@@ -64,11 +64,48 @@ class Array:
 class BinaryHeap(Heap):
 
     def __init__(self) -> None:
-        self._node_to_priority: Dict[str, Tuple[str, bool]] = {}
+        self._node_to_priority: Dict[CS312GraphNode, int] = {}
         self._heap: List[CS312GraphNode] = []
 
-    def make_queue(self, arr: List[CS312GraphNode] ) -> Heap:
+    def make_queue(self, arr: List[CS312GraphNode], start_node: CS312GraphNode) -> None:
+        for itm in arr:
+            if itm == start_node:
+                self._node_to_priority[itm] = 0
+            else:
+                self._node_to_priority[itm] = float('inf')
+
+    def getParent(self, idx: int) -> CS312GraphNode:
+        return self._heap[idx // 2]
+
+    def insert(self, vert: CS312GraphNode) -> None:
+        self._heap.append(vert)
+        self.perc_up()
+    
+    def perc_up(self):
+        # cur_vert = self._node_to_priority[-1]
+        # while self._node_to_priority[]
         pass
 
+    def delete_min(self) -> CS312GraphNode:
+        return_node = self._heap[0]
+        self._heap[0] = self._heap[-1]
+        self._perc_down(0)
+        return return_node
+    
+    def _perc_down(self, cur_idx: int) -> None:
+        while 2 * cur_idx + 1 < len(self._heap):
+            small_side: int = self._get_min_child(cur_idx)
 
+            if self._node_to_priority[self._heap[cur_idx]] > self._node_to_priority[self._heap[small_side]]:
+                self._heap[cur_idx], self._heap[small_side] = self._heap[small_side], self._heap[cur_idx]
+            else:
+                break
 
+            cur_idx = small_side
+
+    def _get_min_child(self, cur_idx: int) -> int:
+        if 2 * cur_idx + 2 > len(self._heap) - 1:
+            return 2 * cur_idx + 1
+        if (2 * cur_idx + 2) > (2 * cur_idx + 1):
+            return 2 * cur_idx + 1
+        return 2 * cur_idx + 2
