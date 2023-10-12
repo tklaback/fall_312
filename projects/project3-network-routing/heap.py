@@ -18,7 +18,7 @@ class Heap:
 
 class Array:
     def __init__(self) -> None:
-        self._node_to_priority: Dict[CS312GraphNode, List[int, bool, CS312GraphNode]] = {}
+        self._node_to_priority: Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]] = {}
         # dictionary maps nodes to their distance, whether they have been visited, and their parent node
         self.cur_min: List[CS312GraphNode, int] = [None, float('inf')]
         self.size: int = 0
@@ -37,6 +37,8 @@ class Array:
                 self.cur_min = [node, self._node_to_priority[node][0]]
 
         min_node =  self.cur_min[0]
+        if min_node == None:
+            return
         self._node_to_priority[min_node][1] = True
         self.size -= 1
         self.cur_min = [None, float("inf")]

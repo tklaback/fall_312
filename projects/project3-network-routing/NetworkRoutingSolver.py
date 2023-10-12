@@ -33,11 +33,11 @@ class NetworkRoutingSolver:
 
         while shortest_map[cur_node][0] != 0:
             edge = None
-            for e in cur_node.neighbors:
-                if e.src == cur_node:
-                    edge = e
-                    break
-            path_edges.append((edge.src.loc, edge.dest.loc,' {:.0f}'.format(edge.length)))
+            # for e in cur_node.neighbors:
+            #     if e.dest == shortest_map[cur_node][2]:
+            #         edge = e
+            #         break
+            path_edges.append((cur_node.loc, shortest_map[cur_node][2].loc, "hello")) #,' {:.0f}'.format(edge.length)))
             cur_node = shortest_map[cur_node][2] # tuple of int, bool and CS312GraphNode
             
         # node = self.network.nodes[self.source]
@@ -62,7 +62,7 @@ class NetworkRoutingSolver:
             self.array_pq.make_queue(self.network.getNodes(), self.network.getNodes()[srcIndex])
 
             u: CS312GraphNode = self.array_pq.delete_min()
-            while self.array_pq.size != 0 and self.array_pq.get_dist(u) != float('inf'):
+            while u:
                 for each_edge in u.neighbors:
                     if self.array_pq.get_dist(each_edge.dest) > self.array_pq.get_dist(each_edge.src) + each_edge.length:
                         self.array_pq.set_dist(each_edge.dest, self.array_pq.get_dist(each_edge.src) + each_edge.length)
