@@ -64,27 +64,35 @@ class Array:
 class BinaryHeap(Heap):
 
     def __init__(self) -> None:
-        self._node_to_priority: Dict[CS312GraphNode, int] = {}
+        self._node_to_priority: Dict[CS312GraphNode, int] = {} # Mapping cs312Nodes to their respective priorities
+        self._pointer_array: Dict[CS312GraphNode, int] = {} # Mapping cs312nodes to their respective indices in heap
         self._heap: List[CS312GraphNode] = []
 
     def make_queue(self, arr: List[CS312GraphNode], start_node: CS312GraphNode) -> None:
+        self._heap.append(start_node)
+        self._pointer_array[start_node] = 0
         for itm in arr:
             if itm == start_node:
                 self._node_to_priority[itm] = 0
             else:
+                self._heap.append(itm)
+                self._pointer_array[itm] = len(self._heap) - 1
                 self._node_to_priority[itm] = float('inf')
 
-    def getParent(self, idx: int) -> CS312GraphNode:
-        return self._heap[idx // 2]
 
     def insert(self, vert: CS312GraphNode) -> None:
         self._heap.append(vert)
-        self.perc_up()
+        self._perc_up(len(self._heap) - 1)
     
-    def perc_up(self):
-        # cur_vert = self._node_to_priority[-1]
-        # while self._node_to_priority[]
-        pass
+    def _perc_up(self, cur_idx: int) -> None:
+        while (cur_idx - 1) >= 0:
+            parent_idx = (cur_idx - 1) // 2
+            if self._node_to_priority[self._heap[parent_idx]] > self._node_to_priority[self._heap[cur_idx]]:
+                self._heap[cur_idx], self._heap[parent_idx] = \
+                self._heap[parent_idx], self._heap[cur_idx]
+
+            cur_idx = parent_idx
+        
 
     def delete_min(self) -> CS312GraphNode:
         return_node = self._heap[0]
@@ -103,9 +111,14 @@ class BinaryHeap(Heap):
 
             cur_idx = small_side
 
+    def decrease_key(self, vert: CS312GraphNode, new_key: int) -> None:
+        self._node_to_priority[vert] = new_key
+        cur_idx = self._pointer_array[vert]
+        self._perc_up(cur_idx)
+
     def _get_min_child(self, cur_idx: int) -> int:
         if 2 * cur_idx + 2 > len(self._heap) - 1:
             return 2 * cur_idx + 1
-        if (2 * cur_idx + 2) > (2 * cur_idx + 1):
+        if self._heap[2 * cur_idx + 2] > self._heap[2 * cur_idx + 1]:
             return 2 * cur_idx + 1
         return 2 * cur_idx + 2
