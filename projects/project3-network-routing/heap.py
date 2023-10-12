@@ -102,30 +102,41 @@ class BinaryHeap(Heap):
         self._heap.append(vert)
         self._perc_up(len(self._heap) - 1)
     
-    def _perc_up(self, cur_idx: int) -> None:
+    def _perc_up(self, cur_idx: int) -> int:
         while (cur_idx - 1) // 2 >= 0:
             parent_idx = (cur_idx - 1) // 2
             if self._node_to_priority[self._heap[parent_idx]] > self._node_to_priority[self._heap[cur_idx]]:
+                
                 self._heap[cur_idx], self._heap[parent_idx] = \
                 self._heap[parent_idx], self._heap[cur_idx]
+
+                self._pointer_array[self._heap[cur_idx]] = cur_idx
+                self._pointer_array[self._heap[parent_idx]] = parent_idx 
 
             cur_idx = parent_idx
         
 
     def delete_min(self) -> CS312GraphNode:
-        return_node = self._heap[0]
-        new_node: CS312GraphNode = self._heap.pop()
-        self._heap[0] = new_node
-        new_idx: int = self._perc_down(0)
-        self._pointer_array[new_node] = new_idx
-        return return_node
+        if len(self._heap):
+            return_node = self._heap[0]
+            new_node: CS312GraphNode = self._heap.pop()
+            if len(self._heap):
+                self._heap[0] = new_node
+                new_idx: int = self._perc_down(0)
+                self._pointer_array[new_node] = new_idx
+            return return_node
     
     def _perc_down(self, cur_idx: int) -> int:
         while 2 * cur_idx + 1 < len(self._heap):
             small_side: int = self._get_min_child(cur_idx)
 
             if self._node_to_priority[self._heap[cur_idx]] > self._node_to_priority[self._heap[small_side]]:
-                self._heap[cur_idx], self._heap[small_side] = self._heap[small_side], self._heap[cur_idx]
+                self._heap[cur_idx], self._heap[small_side] = \
+                self._heap[small_side], self._heap[cur_idx]
+
+                self._pointer_array[self._heap[cur_idx]] = cur_idx
+                self._pointer_array[self._heap[small_side]] = small_side 
+            
             else:
                 break
 
@@ -135,7 +146,9 @@ class BinaryHeap(Heap):
 
     def decrease_key(self, vert: CS312GraphNode) -> None:
         cur_idx = self._pointer_array[vert]
-        self._perc_up(cur_idx)
+        new_idx: int = self._perc_up(cur_idx)
+
+        self._pointer_array[vert] = new_idx
 
     def _get_min_child(self, cur_idx: int) -> int:
         if 2 * cur_idx + 2 > len(self._heap) - 1:
