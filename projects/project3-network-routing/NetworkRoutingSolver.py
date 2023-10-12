@@ -25,7 +25,6 @@ class NetworkRoutingSolver:
         path_edges = []
 
         nodes = self.network.getNodes()
-        # shortest_map = self.array_pq.get_q()
 
         cur_node = nodes[destIndex]
         total_length = self.pq.get_length(cur_node)
@@ -40,14 +39,6 @@ class NetworkRoutingSolver:
             path_edges.append((cur_node.loc, self.pq.get_parent(cur_node).loc, '{:.0f}'.format(edge.length))) #,' {:.0f}'.format(edge.length)))
             cur_node = self.pq.get_parent(cur_node) # tuple of int, bool and CS312GraphNode
             
-        # node = self.network.nodes[self.source]
-        # edges_left = 3
-        # while edges_left > 0:
-        #     edge = node.neighbors[2]
-        #     path_edges.append( (edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)) )
-        #     total_length += edge.length
-        #     node = edge.dest
-        #     edges_left -= 1
         return {'cost':total_length, 'path':path_edges}
 
     def computeShortestPaths( self, srcIndex, use_heap=False ):
