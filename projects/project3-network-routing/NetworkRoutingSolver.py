@@ -32,12 +32,13 @@ class NetworkRoutingSolver:
         total_length = shortest_map[cur_node][0]
 
         while shortest_map[cur_node][0] != 0:
-            edge = None
-            # for e in cur_node.neighbors:
-            #     if e.dest == shortest_map[cur_node][2]:
-            #         edge = e
-            #         break
-            path_edges.append((cur_node.loc, shortest_map[cur_node][2].loc, "hello")) #,' {:.0f}'.format(edge.length)))
+            prev = shortest_map[cur_node][2]
+            for e in prev.neighbors:
+                if e.dest == cur_node:
+                    edge = e
+                    break
+
+            path_edges.append((cur_node.loc, shortest_map[cur_node][2].loc, '{:.0f}'.format(edge.length))) #,' {:.0f}'.format(edge.length)))
             cur_node = shortest_map[cur_node][2] # tuple of int, bool and CS312GraphNode
             
         # node = self.network.nodes[self.source]
