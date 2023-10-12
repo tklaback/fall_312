@@ -18,7 +18,7 @@ class Heap:
 
 class Array:
     def __init__(self) -> None:
-        self._node_to_priority: Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]] = {}
+        self._node_to_priority: Dict[CS312GraphNode, List[int, bool, CS312GraphNode]] = {}
         # dictionary maps nodes to their distance, whether they have been visited, and their parent node
         self.cur_min: List[CS312GraphNode, int] = [None, float('inf')]
         self.size: int = 0
@@ -27,8 +27,8 @@ class Array:
     def make_queue(self, arr: List[CS312GraphNode], startNode: CS312GraphNode):
 
         for node in arr:
-            if node == startNode: self._node_to_priority[node] = tuple([0, False, None])
-            else: self._node_to_priority[node] = tuple([float('inf'), False])
+            if node == startNode: self._node_to_priority[node] = [0, False, None]
+            else: self._node_to_priority[node] = [float('inf'), False, None]
             self.size += 1
 
     def delete_min(self) -> CS312GraphNode:
@@ -55,7 +55,8 @@ class Array:
     def set_prev(self, node: CS312GraphNode, prev: CS312GraphNode) -> None:
         self._node_to_priority[node][2] = prev
 
-    
+    def get_q(self) -> Dict[CS312GraphNode, Tuple[int, bool, CS312GraphNode]]:
+        return self._node_to_priority
 
 
 class BinaryHeap(Heap):
