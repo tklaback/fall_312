@@ -132,7 +132,7 @@ class BinaryHeap(Heap):
 
     def delete_min(self) -> CS312GraphNode:
         """O(_perc_down)"""
-        if len(self._heap):
+        if len(self._heap) and self._node_to_priority[self._heap[0]] != float('inf'):
             return_node = self._heap[0]
             new_node: CS312GraphNode = self._heap.pop()
             if len(self._heap):
