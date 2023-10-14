@@ -44,19 +44,19 @@ class Array(Heap):
                 self._node_to_priority[node] = 0 
                 
             else: 
-                self._node_to_priority[node] = float('inf')
+                self._node_to_priority[node] = float("inf")
             
             self._node_to_visited[node] = False
             self._prev[node] = None
 
     def delete_min(self) -> CS312GraphNode:
         """Delete min has O(n) time complexity since it must loop through each element to see if it is the min"""
-        cur_min = float('inf')
+        cur_min = float("inf")
         final_node = None
-        for node in self._node_to_priority:
-            if self._node_to_priority[node] < cur_min and not self._node_to_visited[node]:
+        for node, priority in self._node_to_priority.items():
+            if priority < cur_min and not self._node_to_visited[node]:
                 final_node = node
-                cur_min = self._node_to_priority[node]
+                cur_min = priority
 
         if final_node == None:
             return
