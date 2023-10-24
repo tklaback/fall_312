@@ -31,8 +31,6 @@ class Array(Heap):
     def __init__(self) -> None:
         super().__init__()
         self._node_to_visited: Dict[CS312GraphNode, bool] = {}
-        # dictionary maps nodes to their distance, whether they have been visited, and their parent node
-
 
     def make_queue(self, arr: List[CS312GraphNode], startNode: CS312GraphNode):
 
