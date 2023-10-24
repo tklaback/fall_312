@@ -1,15 +1,12 @@
 from typing import Dict, List, Tuple
 
 from CS312Graph import CS312GraphNode
-import sys
 
 class Heap:
     def __init__(self) -> None:
         self._prev: Dict[CS312GraphNode, CS312GraphNode] = {} # Maps node to previous node
+        self._node_to_priority: Dict[CS312GraphNode, int] = {} # Mapping cs312Nodes to their respective priorities
 
-    def make_queue(self, arr: List[CS312GraphNode], startNode: CS312GraphNode) -> None:
-        """Has O(n) time complexity for both implementations"""
-        pass
 
     def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
         pass
@@ -32,11 +29,8 @@ class Heap:
 
 class Array(Heap):
     def __init__(self) -> None:
-        """dictionary maps nodes to their distance, whether they have been visited, and their parent node"""
         super().__init__()
-        self._node_to_priority: Dict[CS312GraphNode, int] = {}
         self._node_to_visited: Dict[CS312GraphNode, bool] = {}
-
 
     def make_queue(self, arr: List[CS312GraphNode], startNode: CS312GraphNode) -> None:
         for node in arr:
@@ -89,12 +83,10 @@ class Array(Heap):
 class BinaryHeap(Heap):
 
     def __init__(self) -> None:
-        """Maps cs312Nodes to their respective prioriteis and respective indices in the heap"""
-        super().__init__()
-        self._node_to_priority: Dict[CS312GraphNode, int] = {}
-        self._pointer_array: Dict[CS312GraphNode, int] = {}
+        self._pointer_array: Dict[CS312GraphNode, int] = {} # Mapping cs312nodes to their respective indices in heap
         self._heap: List[CS312GraphNode] = []
-        
+        super().__init__()
+
 
     def make_queue(self, arr: List[CS312GraphNode], start_node: CS312GraphNode) -> None:
         self._heap.append(start_node)
