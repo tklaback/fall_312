@@ -47,10 +47,10 @@ class Array(Heap):
     def delete_min(self) -> CS312GraphNode:
         cur_min = float('inf')
         final_node = None
-        for node in self._node_to_priority:
-            if self._node_to_priority[node] < cur_min and not self._node_to_visited[node]:
+        for node, priority in self._node_to_priority.items():
+            if priority < cur_min and not self._node_to_visited[node]:
                 final_node = node
-                cur_min = self._node_to_priority[node]
+                cur_min = priority
 
         if final_node == None:
             return
@@ -71,7 +71,6 @@ class Array(Heap):
     def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
         return self._node_to_prev.get(vert, None)
 
-    
     def get_length(self, vert: CS312GraphNode) -> float:
         return self._node_to_priority[vert]
 
