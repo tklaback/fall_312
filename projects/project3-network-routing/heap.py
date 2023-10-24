@@ -1,9 +1,12 @@
 from typing import Dict, List, Tuple
 
 from CS312Graph import CS312GraphNode
-import sys
 
 class Heap:
+    def __init__(self) -> None:
+        self._prev: Dict[CS312GraphNode, CS312GraphNode] = {} # Maps node to previous node
+        self._node_to_priority: Dict[CS312GraphNode, int] = {} # Mapping cs312Nodes to their respective priorities
+
 
     def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
         pass
@@ -26,9 +29,8 @@ class Heap:
 
 class Array(Heap):
     def __init__(self) -> None:
-        self._node_to_priority: Dict[CS312GraphNode, int] = {}
+        super().__init__()
         self._node_to_visited: Dict[CS312GraphNode, bool] = {}
-        self._node_to_prev: Dict[CS312GraphNode, CS312GraphNode] = {}
         # dictionary maps nodes to their distance, whether they have been visited, and their parent node
 
 
@@ -42,7 +44,7 @@ class Array(Heap):
                 self._node_to_priority[node] = float('inf')
             
             self._node_to_visited[node] = False
-            self._node_to_prev[node] = None
+            self._prev[node] = None
 
     def delete_min(self) -> CS312GraphNode:
         cur_min = float('inf')
@@ -66,10 +68,10 @@ class Array(Heap):
         self._node_to_priority[node] = dist
     
     def set_prev(self, node: CS312GraphNode, prev: CS312GraphNode) -> None:
-        self._node_to_prev[node] = prev
+        self._prev[node] = prev
             
     def get_parent(self, vert: CS312GraphNode) -> CS312GraphNode:
-        return self._node_to_prev.get(vert, None)
+        return self._prev.get(vert, None)
 
     def get_length(self, vert: CS312GraphNode) -> float:
         return self._node_to_priority[vert]
@@ -77,10 +79,10 @@ class Array(Heap):
 class BinaryHeap(Heap):
 
     def __init__(self) -> None:
-        self._node_to_priority: Dict[CS312GraphNode, int] = {} # Mapping cs312Nodes to their respective priorities
         self._pointer_array: Dict[CS312GraphNode, int] = {} # Mapping cs312nodes to their respective indices in heap
         self._heap: List[CS312GraphNode] = []
-        self._prev: Dict[CS312GraphNode, CS312GraphNode] = {} # Maps node to previous node
+        super().__init__()
+
 
     def make_queue(self, arr: List[CS312GraphNode], start_node: CS312GraphNode) -> None:
         self._heap.append(start_node)
