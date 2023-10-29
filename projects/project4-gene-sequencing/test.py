@@ -3,8 +3,11 @@
 word1 = "-other"
 word2 = "-thars"
 
-
-
+class Node:
+    def __init__(self, val, parent=None) -> None:
+        self.value = val
+        self.parent = parent
+        self.type = None
 
 def fill_matrix(matrix, cur_row, cur_col):
 
@@ -21,15 +24,19 @@ def fill_matrix(matrix, cur_row, cur_col):
 
     add = 0 if word1[cur_col] == word2[cur_row] else 1
 
-    matrix[cur_row][cur_col] = min(upper_left, left, up) + add
-
+    min_val = sorted([upper_left, left, up], key=lambda x:x.value if type(x) == Node else x)[0]
     
-    # traverse entire row and fill it in
+    new_node = Node(min_val.value + add, min_val) if type(min_val) == Node else Node(min_val + add, min_val)
 
-    # if I my row == col:
-    #   traverse my column
+    if type(min_val) == Node:
+        if min_val.parent == up:
+            new_node.type = "delete"
+        elif min_val.parent == upper_left:
+            new_node.type = "replace"
+        else:
+            new_node.type = "insert"
 
-    # move to row + 1, col + 1
+    matrix[cur_row][cur_col] = new_node
 
     if cur_col != len(matrix[0]) - 1:
         fill_matrix(matrix, cur_row, cur_col + 1)
@@ -37,7 +44,6 @@ def fill_matrix(matrix, cur_row, cur_col):
     if cur_col == 0 and cur_row != len(matrix) - 1:
         fill_matrix(matrix, cur_row + 1, cur_col)
 
-         
 
 
 
@@ -54,4 +60,6 @@ matrix = [[None for itm in word1] for itm in word2]
 
 fill_matrix(matrix, 0, 0)
 printm(matrix)
+
+
 
