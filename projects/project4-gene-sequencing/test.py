@@ -28,15 +28,19 @@ def fill_matrix(matrix, cur_row, cur_col):
     
     new_node = Node(min_val.value + add, min_val) if type(min_val) == Node else Node(min_val + add, min_val)
 
+    matrix[cur_row][cur_col] = new_node
+
     if type(min_val) == Node:
-        if min_val.parent == up:
+        if min_val == up:
+            new_node.parent = up
             new_node.type = "delete"
-        elif min_val.parent == upper_left:
+        elif min_val == upper_left:
+            new_node.parent = upper_left
             new_node.type = "replace"
-        else:
+        elif min_val == left:
+            new_node.parent = left
             new_node.type = "insert"
 
-    matrix[cur_row][cur_col] = new_node
 
     if cur_col != len(matrix[0]) - 1:
         fill_matrix(matrix, cur_row, cur_col + 1)
@@ -44,21 +48,44 @@ def fill_matrix(matrix, cur_row, cur_col):
     if cur_col == 0 and cur_row != len(matrix) - 1:
         fill_matrix(matrix, cur_row + 1, cur_col)
 
-
-
-
 def printm(matrix):
     for row in matrix:
         for col in row:
             print(col, end=" ")
         print()
 
+def modify_string(matrix, mod_string, orig_string):
+    cur_idx = len(mod_string) - 1
+    # string1
+
+    target = (len(orig_string) - 1, len(mod_string) - 1)
+
+    start: Node = matrix[target[0]][target[1]]
+
+    my_sting_arr = list(mod_string)
+    mod_str_idx = cur_idx
+    while start.parent:
+        print(start.type)
+        if start.type == "delete":
+            my_sting_arr[cur_idx] = "-"
+        else:
+            my_sting_arr[cur_idx] = mod_string[mod_str_idx]
+            mod_str_idx -= 1
+        cur_idx -= 1
+        start = start.parent
+    
+    print(my_sting_arr)
+
+    print(start)
 
 
 matrix = [[None for itm in word1] for itm in word2]
 
 
 fill_matrix(matrix, 0, 0)
+
+modify_string(matrix, word1, word2)
+
 printm(matrix)
 
 
