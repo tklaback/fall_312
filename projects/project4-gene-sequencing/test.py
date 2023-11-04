@@ -8,14 +8,15 @@ MATCH = -3
 INDEL = 5
 SUB = 1
 
-word1 = "-ATAFFGT"
-word2 = "-ACCGTFF"
+word1 = "-OTHER"
+word2 = "-THARS"
 
 class Node:
-    def __init__(self, val, parent=None) -> None:
+    def __init__(self, val, parent=None, finished=0) -> None:
         self.value = val
         self.parent = parent
         self.type = None
+        self.finished = finished
     
     def __lt__(self, other: 'Node'):
 
@@ -30,7 +31,7 @@ class Node:
 def fill_matrix(matrix, cur_row, cur_col):
 
     if cur_col == 0 and cur_row == 0:
-        upper_left = Node(0)
+        upper_left = Node(0, finished=1)
     elif cur_col == 0 or cur_row == 0: 
         upper_left = Node(float('inf'))
     else:
@@ -44,7 +45,7 @@ def fill_matrix(matrix, cur_row, cur_col):
 
     min_val = sorted([upper_left, left, up])[0]
     
-    new_node = Node(min_val.value + add, min_val) if type(min_val) == Node else Node(min_val + add, min_val)
+    new_node = Node(min_val.value, min_val)
 
     matrix[cur_row][cur_col] = new_node
 
@@ -52,12 +53,26 @@ def fill_matrix(matrix, cur_row, cur_col):
         if min_val == up:
             new_node.parent = up
             new_node.type = "delete"
+            if add == 0:
+                new_node.value -= 3
+            else:
+                new_node.value += 5
+            
         elif min_val == upper_left:
             new_node.parent = upper_left
             new_node.type = "replace"
+            if add == 0:
+                new_node.value -= 3
+            else:
+                new_node.value += 1
+
         elif min_val == left:
             new_node.parent = left
             new_node.type = "insert"
+            if add == 0:
+                new_node.value -= 3
+            else:
+                new_node.value += 5
 
 
     if cur_col != len(matrix[0]) - 1:
@@ -69,32 +84,12 @@ def fill_matrix(matrix, cur_row, cur_col):
 def printm(matrix):
     for row in matrix:
         for col in row:
-            print(col.value, end=" ")
+            print((col.value, col.type[:1]), end=" ")
         print()
 
 def modify_string(matrix, mod_string, orig_string):
-    cur_idx = len(mod_string) - 1
-    # string1
+    pass
 
-    target = (len(orig_string) - 1, len(mod_string) - 1)
-
-    start: Node = matrix[target[0]][target[1]]
-
-    my_sting_arr = list(mod_string)
-    mod_str_idx = cur_idx
-    while start.parent:
-        print(start.type)
-        if start.type == "delete":
-            my_sting_arr[cur_idx] = "-"
-        else:
-            my_sting_arr[cur_idx] = mod_string[mod_str_idx]
-            mod_str_idx -= 1
-        cur_idx -= 1
-        start = start.parent
-    
-    print(my_sting_arr)
-
-    print(start)
 
 
 matrix = [[None for itm in word1] for itm in word2]
