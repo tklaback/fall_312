@@ -1,30 +1,48 @@
 
+from typing import Union
+# Used to compute the bandwidth for banded version
+MAXINDELS = 3
 
-word1 = "-other"
-word2 = "-thars"
+# Used to implement Needleman-Wunsch scoring
+MATCH = -3
+INDEL = 5
+SUB = 1
+
+word1 = "-ATAFFGT"
+word2 = "-ACCGTFF"
 
 class Node:
     def __init__(self, val, parent=None) -> None:
         self.value = val
         self.parent = parent
         self.type = None
+    
+    def __lt__(self, other: 'Node'):
+
+        priority_dyct = {'insert': 1, 'delete': 2, 'replace': 3}
+
+        if self.value == other.value:
+            return priority_dyct.get(self.type, 1) < priority_dyct.get(other.type, 1)
+
+        return self.value < other.value
+
 
 def fill_matrix(matrix, cur_row, cur_col):
 
     if cur_col == 0 and cur_row == 0:
-        upper_left = 0 
+        upper_left = Node(0)
     elif cur_col == 0 or cur_row == 0: 
-        upper_left = float('inf')
+        upper_left = Node(float('inf'))
     else:
         upper_left = matrix[cur_row - 1][cur_col - 1]
 
-    left = float('inf') if cur_col == 0 else matrix[cur_row][cur_col - 1]
+    left = Node(float('inf')) if cur_col == 0 else matrix[cur_row][cur_col - 1]
 
-    up = float('inf') if cur_row == 0 else matrix[cur_row - 1][cur_col]
+    up = Node(float('inf')) if cur_row == 0 else matrix[cur_row - 1][cur_col]
 
     add = 0 if word1[cur_col] == word2[cur_row] else 1
 
-    min_val = sorted([upper_left, left, up], key=lambda x:x.value if type(x) == Node else x)[0]
+    min_val = sorted([upper_left, left, up])[0]
     
     new_node = Node(min_val.value + add, min_val) if type(min_val) == Node else Node(min_val + add, min_val)
 
@@ -51,7 +69,7 @@ def fill_matrix(matrix, cur_row, cur_col):
 def printm(matrix):
     for row in matrix:
         for col in row:
-            print(col, end=" ")
+            print(col.value, end=" ")
         print()
 
 def modify_string(matrix, mod_string, orig_string):
@@ -87,6 +105,5 @@ fill_matrix(matrix, 0, 0)
 modify_string(matrix, word1, word2)
 
 printm(matrix)
-
 
 
