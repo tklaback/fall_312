@@ -74,7 +74,7 @@ def fill_matrix(matrix, cur_row, cur_col):
             new_node.type = "insert"
             new_node.letter = word1[cur_col]
             if add == 0:
-                new_node.value -= MATCH
+                new_node.value += MATCH
             else:
                 new_node.value += INDEL
 
@@ -121,9 +121,9 @@ def modify_string(matrix):
     while start.parent.letter != None:
         if start.type == "delete" or start.type == "insert":
             cur_indel += 1
-        if cur_indel < MAXINDELS:
-            print("TOO MANY INDELS")
-            return
+        # if cur_indel < MAXINDELS:
+        #     print("TOO MANY INDELS")
+        #     return
         mod_string[cur_idx] = start.letter
         start = start.parent
     
@@ -133,13 +133,21 @@ def modify_string(matrix):
 matrix = [[None for itm in word1] for itm in word2]
 
 
-# fill_matrix(matrix, 0, 0)
-
-
+fill_matrix(matrix, 0, 0)
 # modify_string(matrix)
 
+# fill_matrix2(matrix)
+# printm2(matrix)
+printm(matrix)
 
-fill_matrix2(matrix)
-printm2(matrix)
 
+
+# When breaking ties, make sure to take into account what will be added to the number that you 
+# are drawing from: 
+
+# 5 1
+# 1 
+
+# So, here if indel is +5 and it is not a match (so replace is +1),
+# then upper_left, top and left will all yield the same result
 
