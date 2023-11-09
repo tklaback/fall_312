@@ -8,15 +8,16 @@ MATCH = -3
 INDEL = 5
 SUB = 1
 
-word1 = "-OTHER"
-word2 = "-THARS"
+word1 = "-other"
+word2 = "-thars"
 
 class Node:
-    def __init__(self, val, parent=None, finished=0) -> None:
+    def __init__(self, val, letter=None, parent=None, finished=0) -> None:
         self.value = val
         self.parent = parent
         self.type = None
         self.finished = finished
+        self.letter = letter
     
     def __lt__(self, other: 'Node'):
 
@@ -45,7 +46,7 @@ def fill_matrix(matrix, cur_row, cur_col):
 
     min_val = sorted([upper_left, left, up])[0]
     
-    new_node = Node(min_val.value, min_val)
+    new_node = Node(min_val.value, parent=min_val)
 
     matrix[cur_row][cur_col] = new_node
 
@@ -53,6 +54,7 @@ def fill_matrix(matrix, cur_row, cur_col):
         if min_val == up:
             new_node.parent = up
             new_node.type = "delete"
+            new_node.letter = "-"
             if add == 0:
                 new_node.value -= 3
             else:
@@ -61,6 +63,7 @@ def fill_matrix(matrix, cur_row, cur_col):
         elif min_val == upper_left:
             new_node.parent = upper_left
             new_node.type = "replace"
+            new_node.letter = word1[cur_col]
             if add == 0:
                 new_node.value -= 3
             else:
@@ -69,6 +72,7 @@ def fill_matrix(matrix, cur_row, cur_col):
         elif min_val == left:
             new_node.parent = left
             new_node.type = "insert"
+            new_node.letter = word1[cur_col]
             if add == 0:
                 new_node.value -= 3
             else:
@@ -87,8 +91,19 @@ def printm(matrix):
             print((col.value, col.type[:1]), end=" ")
         print()
 
-def modify_string(matrix, mod_string, orig_string):
-    pass
+def modify_string(matrix):
+    mod_string = list(word1)
+
+    cur_idx = len(mod_string) - 1
+    start = matrix[len(word2) - 1][len(word1) - 1]
+
+
+    while start.parent.letter != None and cur_idx >= 0:
+        mod_string[cur_idx] = start.letter
+        start = start.parent
+        cur_idx -= 1
+    
+    print(mod_string)
 
 
 
@@ -97,7 +112,7 @@ matrix = [[None for itm in word1] for itm in word2]
 
 fill_matrix(matrix, 0, 0)
 
-modify_string(matrix, word1, word2)
+modify_string(matrix)
 
 printm(matrix)
 
