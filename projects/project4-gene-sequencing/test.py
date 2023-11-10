@@ -156,23 +156,46 @@ def modify_string(matrix):
             word2_itr -= 1
 
     mod_string.reverse()
-    # cur_idx = len(mod_string) - 1
-    # start = matrix[len(word2) - 1][len(word1) - 1]
-
-    # cur_indel = 0
-    # while start.parent.letter != None:
-    #     if start.type == "delete" or start.type == "insert":
-    #         cur_indel += 1
-    #     # if cur_indel < MAXINDELS:
-    #     #     print("TOO MANY INDELS")
-    #     #     return
-    #     mod_string[cur_idx] = start.letter
-    #     start = start.parent
     
     print(mod_string)
 
 
-matrix = [[None for itm in word1] for itm in word2]
+def modify_string_banded(matrix):
+    mod_string = []
+
+    word2_itr = len(word2) - 1
+    word1_itr = len(word1) - 1
+
+    indel_count = 0
+    invalid = False
+    while word1_itr > 0 or word2_itr > 0:
+        if abs(indel_count) > MAXINDELS:
+            invalid = True
+            break
+        mod_type = matrix[word2_itr][word1_itr].type
+        if mod_type == "replace":
+
+            mod_string.append(matrix[word2_itr][word1_itr].letter)
+            word2_itr -= 1
+            word1_itr -= 1
+        elif mod_type == "insert":
+            indel_count += 1
+            mod_string.append(matrix[word2_itr][word1_itr].letter)
+            word1_itr -= 1
+        else:
+            indel_count -= 1
+            mod_string.append("-")
+            word2_itr -= 1
+    
+    if not invalid:
+        mod_string.reverse()
+        
+        print(mod_string)
+    else:
+        print("INVALID STRING")
+
+
+matrix = [[None for _ in word1] for itm in word2]
 
 
 fill_matrix(matrix, 0, 0)
