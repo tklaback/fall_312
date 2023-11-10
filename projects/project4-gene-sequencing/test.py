@@ -29,15 +29,18 @@ class Node:
         return self.value < other.value
     
 def sort_vals(upper_left: Node, up: Node, left: Node, add: int) -> Node:
-    upper_left.value += MATCH if not add else 1
-    up.value += 5
-    left.value += 5
+
+    # Temporarily add scores to see if there are any ties
+    # when finished sorting, set them back
+    upper_left.value += MATCH if not add else SUB
+    up.value += INDEL
+    left.value += INDEL
 
     min_val = sorted([upper_left, left, up])[0]
 
-    upper_left.value -= MATCH if not add else 1
-    up.value -= 5
-    left.value -= 5
+    upper_left.value -= MATCH if not add else SUB
+    up.value -= INDEL
+    left.value -= INDEL
 
     return min_val
 
@@ -113,9 +116,13 @@ def fill_matrix2(matrix):
 
 
 def printm(matrix):
+    max_width = max(len(f"({col.value}, {col.type[:1]})") for row in matrix for col in row)
+    
     for row in matrix:
         for col in row:
-            print((col.value, col.type[:1]), end=" ")
+            element = f"({col.value}, {col.type[:1]})"
+            padding = " " * (max_width - len(element))
+            print(f"{element}{padding}", end=" ")
         print()
 
 def printm2(matrix):
@@ -125,20 +132,42 @@ def printm2(matrix):
         print()
 
 def modify_string(matrix):
-    mod_string = list(word1)
 
-    cur_idx = len(mod_string) - 1
-    start = matrix[len(word2) - 1][len(word1) - 1]
+    mod_string = []
 
-    cur_indel = 0
-    while start.parent.letter != None:
-        if start.type == "delete" or start.type == "insert":
-            cur_indel += 1
-        # if cur_indel < MAXINDELS:
-        #     print("TOO MANY INDELS")
-        #     return
-        mod_string[cur_idx] = start.letter
-        start = start.parent
+
+    word2_itr = len(word2) - 1
+    word1_itr = len(word1) - 1
+
+
+    while word1_itr > 0 or word2_itr > 0:
+        mod_type = matrix[word2_itr][word1_itr].type
+        if mod_type == "replace":
+
+            # mod_string[word1_itr] = word2[word2_itr]
+            mod_string.append(matrix[word2_itr][word1_itr].letter)
+            word2_itr -= 1
+            word1_itr -= 1
+        elif mod_type == "insert":
+            mod_string.append(matrix[word2_itr][word1_itr].letter)
+            word1_itr -= 1
+        else:
+            mod_string.append("-")
+            word2_itr -= 1
+
+    mod_string.reverse()
+    # cur_idx = len(mod_string) - 1
+    # start = matrix[len(word2) - 1][len(word1) - 1]
+
+    # cur_indel = 0
+    # while start.parent.letter != None:
+    #     if start.type == "delete" or start.type == "insert":
+    #         cur_indel += 1
+    #     # if cur_indel < MAXINDELS:
+    #     #     print("TOO MANY INDELS")
+    #     #     return
+    #     mod_string[cur_idx] = start.letter
+    #     start = start.parent
     
     print(mod_string)
 
@@ -152,6 +181,8 @@ fill_matrix(matrix, 0, 0)
 # fill_matrix2(matrix)
 # printm2(matrix)
 printm(matrix)
+
+modify_string(matrix)
 
 
 
