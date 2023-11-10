@@ -4,12 +4,12 @@ from typing import Union
 MAXINDELS = 3
 
 # Used to implement Needleman-Wunsch scoring
-MATCH = 0
-INDEL = 1
+MATCH = -3
+INDEL = 5
 SUB = 1
 
-word1 = "-agcatgc"
-word2 = "-acaatcc"
+word1 = "-exponential"
+word2 = "-polynomial"
 
 class Node:
     def __init__(self, val, letter=None, parent=None, finished=0) -> None:
@@ -116,27 +116,20 @@ def fill_matrix2(matrix):
             
 def fill_matrix2_banded(matrix):
     cur_indel = 0
-    for slot in range(len(matrix)):
-        matrix[slot][0] = (slot + INDEL, "delete")
-    for slot in range(len(matrix[0])):
-        matrix[0][slot] = (slot + INDEL, "insert")
+    matrix[0][0] = (0, None, None)
+    for slot in range(1, min(len(matrix) - 1, MAXINDELS) + 1):
+        matrix[slot][0] = (INDEL + matrix[slot - 1][0][0], "de", 2)
+    for slot in range(1, min(len(matrix[0]) - 1, MAXINDELS) + 1):
+        matrix[0][slot] = (INDEL + matrix[0][slot - 1][0], "in", 1)
     for row in range(1, len(matrix)):
         for col in range(max(1, row - MAXINDELS), min(len(matrix[0]) - 1, row + MAXINDELS) + 1):
 
             final_val = \
-            sorted([((MATCH if word1[col] == word2[row] else SUB) + matrix[row - 1][col - 1], "upper_left"),
-                (INDEL + matrix[row][col - 1], "insert"),
-                (INDEL + matrix[row - 1][col], "delete")],
-                key=lambda x : x[0]
+            sorted([((MATCH if word1[col] == word2[row] else SUB) + matrix[row - 1][col - 1][0], "diag", 3),
+                (INDEL + matrix[row][col - 1][0] if matrix[row][col - 1] else float('inf'), "in", 1),
+                (INDEL + matrix[row - 1][col][0] if matrix[row - 1][col] else float('inf'), "de", 2)],
+                key=lambda x : (x[0], x[2])
                 )[0]
-            
-            # if final_val[1] == "insert":
-            #     cur_indel -= 1
-            # elif final_val[1] == "delete":
-            #     cur_indel += 1
-            
-            # if cur_indel >= 1:
-            #     return
 
             matrix[row][col] = final_val
 
@@ -239,7 +232,7 @@ matrix = [[None for _ in word1] for itm in word2]
 
 
 fill_matrix2_banded(matrix)
-
+printm2(matrix)
 
 # When breaking ties, make sure to take into account what will be added to the number that you 
 # are drawing from: 
