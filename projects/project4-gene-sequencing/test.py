@@ -4,8 +4,8 @@ from typing import Union
 MAXINDELS = 3
 
 # Used to implement Needleman-Wunsch scoring
-MATCH = -3
-INDEL = 5
+MATCH = 0
+INDEL = 1
 SUB = 1
 
 word1 = "-polynomial"
@@ -70,7 +70,7 @@ def fill_matrix(matrix, cur_row, cur_col):
         if min_val == up:
             new_node.parent = up
             new_node.type = "delete"
-            new_node.letter = "-"
+            new_node.letter = ("-", word2[cur_row])
             if add == 0:
                 new_node.value += MATCH
             else:
@@ -79,7 +79,7 @@ def fill_matrix(matrix, cur_row, cur_col):
         elif min_val == upper_left:
             new_node.parent = upper_left
             new_node.type = "replace"
-            new_node.letter = word1[cur_col]
+            new_node.letter = (word1[cur_col], word2[cur_row])
             if add == 0 and not (cur_col == 0 and cur_row == 0):
                 new_node.value += MATCH
             elif add == 1 and not (cur_col == 0 and cur_row == 0):
@@ -88,7 +88,7 @@ def fill_matrix(matrix, cur_row, cur_col):
         elif min_val == left:
             new_node.parent = left
             new_node.type = "insert"
-            new_node.letter = word1[cur_col]
+            new_node.letter = (word1[cur_col], "-")
             if add == 0:
                 new_node.value += MATCH
             else:
@@ -161,7 +161,8 @@ def modify_string(matrix):
 
 
 def modify_string_banded(matrix):
-    mod_string = []
+    mod_string1 = []
+    mod_string2 = []
 
     word2_itr = len(word2) - 1
     word1_itr = len(word1) - 1
@@ -173,24 +174,25 @@ def modify_string_banded(matrix):
             invalid = True
             break
         mod_type = matrix[word2_itr][word1_itr].type
-        if mod_type == "replace":
 
-            mod_string.append(matrix[word2_itr][word1_itr].letter)
+        mod_string1.append(matrix[word2_itr][word1_itr].letter[0])
+        mod_string2.append(matrix[word2_itr][word1_itr].letter[1])
+        if mod_type == "replace":
             word2_itr -= 1
             word1_itr -= 1
         elif mod_type == "insert":
             indel_count += 1
-            mod_string.append(matrix[word2_itr][word1_itr].letter)
             word1_itr -= 1
         else:
             indel_count -= 1
-            mod_string.append("-")
             word2_itr -= 1
     
     if not invalid:
-        mod_string.reverse()
+        mod_string1.reverse()
+        mod_string2.reverse()
         
-        print(mod_string)
+        print(mod_string1)
+        print(mod_string2)
     else:
         print("INVALID STRING")
 
@@ -205,7 +207,7 @@ fill_matrix(matrix, 0, 0)
 # printm2(matrix)
 printm(matrix)
 
-modify_string(matrix)
+modify_string_banded(matrix)
 
 
 
