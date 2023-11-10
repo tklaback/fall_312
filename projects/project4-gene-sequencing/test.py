@@ -8,8 +8,8 @@ MATCH = 0
 INDEL = 1
 SUB = 1
 
-word1 = "-polynomial"
-word2 = "-exponential"
+word1 = "-agcatgc"
+word2 = "-acaatcc"
 
 class Node:
     def __init__(self, val, letter=None, parent=None, finished=0) -> None:
@@ -113,6 +113,32 @@ def fill_matrix2(matrix):
                 INDEL + matrix[row][col - 1],
                 INDEL + matrix[row - 1][col]
                 )
+            
+def fill_matrix2_banded(matrix):
+    cur_indel = 0
+    for slot in range(len(matrix)):
+        matrix[slot][0] = (slot + INDEL, "delete")
+    for slot in range(len(matrix[0])):
+        matrix[0][slot] = (slot + INDEL, "insert")
+    for row in range(1, len(matrix)):
+        for col in range(max(1, row - MAXINDELS), min(len(matrix[0]) - 1, row + MAXINDELS) + 1):
+
+            final_val = \
+            sorted([((MATCH if word1[col] == word2[row] else SUB) + matrix[row - 1][col - 1], "upper_left"),
+                (INDEL + matrix[row][col - 1], "insert"),
+                (INDEL + matrix[row - 1][col], "delete")],
+                key=lambda x : x[0]
+                )[0]
+            
+            # if final_val[1] == "insert":
+            #     cur_indel -= 1
+            # elif final_val[1] == "delete":
+            #     cur_indel += 1
+            
+            # if cur_indel >= 1:
+            #     return
+
+            matrix[row][col] = final_val
 
 
 def printm(matrix):
@@ -200,15 +226,19 @@ def modify_string_banded(matrix):
 matrix = [[None for _ in word1] for itm in word2]
 
 
-fill_matrix(matrix, 0, 0)
+# fill_matrix(matrix, 0, 0)
 # modify_string(matrix)
 
 # fill_matrix2(matrix)
 # printm2(matrix)
-printm(matrix)
+# printm(matrix)
 
-modify_string_banded(matrix)
+# modify_string_banded(matrix)
 
+
+
+
+fill_matrix2_banded(matrix)
 
 
 # When breaking ties, make sure to take into account what will be added to the number that you 
