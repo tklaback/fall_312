@@ -27,6 +27,19 @@ class Node:
             return priority_dyct.get(self.type, 1) < priority_dyct.get(other.type, 1)
 
         return self.value < other.value
+    
+def sort_vals(upper_left: Node, up: Node, left: Node, add: int) -> Node:
+    upper_left.value += MATCH if not add else 1
+    up.value += 5
+    left.value += 5
+
+    min_val = sorted([upper_left, left, up])[0]
+
+    upper_left.value -= MATCH if not add else 1
+    up.value -= 5
+    left.value -= 5
+
+    return min_val
 
 
 def fill_matrix(matrix, cur_row, cur_col):
@@ -44,8 +57,8 @@ def fill_matrix(matrix, cur_row, cur_col):
 
     add = 0 if word1[cur_col] == word2[cur_row] else 1
 
-    min_val = sorted([upper_left, left, up])[0]
-    
+    min_val = sort_vals(upper_left, up, left, add)
+
     new_node = Node(min_val.value, parent=min_val)
 
     matrix[cur_row][cur_col] = new_node
