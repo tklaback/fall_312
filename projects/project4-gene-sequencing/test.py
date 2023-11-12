@@ -8,8 +8,19 @@ MATCH = -3
 INDEL = 5
 SUB = 1
 
-word1 = "-exponential"
-word2 = "-polynomial"
+word1 = "-polynomial"
+word2 = "-exponential"
+
+# Word 2 rows
+# word 1 columns
+
+#   -  w   o   r   d   1
+# -
+# w
+# o
+# r
+# d
+# 2
 
 class Node:
     def __init__(self, val, letter=None, parent=None, finished=0) -> None:
@@ -102,20 +113,24 @@ def fill_matrix(matrix, cur_row, cur_col):
         fill_matrix(matrix, cur_row + 1, cur_col)
 
 def fill_matrix2(matrix):
-    for slot in range(len(matrix)):
-        matrix[slot][0] = slot
-    for slot in range(len(matrix[0])):
-        matrix[0][slot] = slot
+    matrix[0][0] = (0, None, None)
+    for slot in range(1, len(matrix)):
+        matrix[slot][0] = (INDEL + matrix[slot - 1][0][0], "de", 2)
+    for slot in range(1, len(matrix[0])):
+        matrix[0][slot] = (INDEL + matrix[0][slot - 1][0], "in", 1)
     for row in range(1, len(matrix)):
         for col in range(1, len(matrix[0])):
-            matrix[row][col] = \
-            min((MATCH if word1[col] == word2[row] else SUB) + matrix[row - 1][col - 1],
-                INDEL + matrix[row][col - 1],
-                INDEL + matrix[row - 1][col]
-                )
+            
+            final_val = \
+            sorted([((MATCH if word1[col] == word2[row] else SUB) + matrix[row - 1][col - 1][0], "diag", 3),
+                (INDEL + matrix[row][col - 1][0] if matrix[row][col - 1] else float('inf'), "in", 1),
+                (INDEL + matrix[row - 1][col][0] if matrix[row - 1][col] else float('inf'), "de", 2)],
+                key=lambda x : (x[0], x[2])
+                )[0]
+
+            matrix[row][col] = final_val
             
 def fill_matrix2_banded(matrix):
-    cur_indel = 0
     matrix[0][0] = (0, None, None)
     for slot in range(1, min(len(matrix) - 1, MAXINDELS) + 1):
         matrix[slot][0] = (INDEL + matrix[slot - 1][0][0], "de", 2)
@@ -215,6 +230,48 @@ def modify_string_banded(matrix):
     else:
         print("INVALID STRING")
 
+def modify_string2(matrix):
+    mod_string1 = []
+    mod_string2 = []
+
+    word2_itr = 0
+    word1_itr = 0
+
+    indel_count = 0
+    invalid = False
+
+    while word1_itr >= 0 or word2_itr >= 0:
+        if abs(indel_count) > MAXINDELS:
+            invalid = True
+            break
+        mod_type = matrix[word2_itr][word1_itr][1]
+
+        if len(word1) - word1_itr - 1 >= 0:
+
+
+        if mod_type == "diag":
+            
+            word2_itr -= 1
+            word1_itr -= 1
+        elif mod_type == "in":
+            
+            indel_count += 1
+            word1_itr -= 1
+        else:
+
+            indel_count -= 1
+            word2_itr -= 1
+    
+    if not invalid:
+        mod_string1.reverse()
+        mod_string2.reverse()
+        
+        print(mod_string1)
+        print(mod_string2)
+    else:
+        print("INVALID STRING")
+
+
 
 matrix = [[None for _ in word1] for itm in word2]
 
@@ -231,8 +288,10 @@ matrix = [[None for _ in word1] for itm in word2]
 
 
 
-fill_matrix2_banded(matrix)
+fill_matrix2(matrix)
 printm2(matrix)
+
+modify_string2(matrix)
 
 # When breaking ties, make sure to take into account what will be added to the number that you 
 # are drawing from: 
