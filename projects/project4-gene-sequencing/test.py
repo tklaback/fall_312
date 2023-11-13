@@ -237,55 +237,35 @@ def modify_string2(matrix):
     word2_itr = 0
     word1_itr = 0
 
-    indel_count = 0
-    invalid = False
+    longest = sorted([(len(word1), '1'), (len(word2), '2')], key=lambda x:x[0])[1]
 
-    while word1_itr >= 0 or word2_itr >= 0:
-        if abs(indel_count) > MAXINDELS:
-            invalid = True
-            break
-        mod_type = matrix[word2_itr][word1_itr][1]
-
-        if len(word1) - word1_itr - 1 >= 0:
+    
+    while (len(word2) - word2_itr - 1 >= -1 if longest[1] == "2" else len(word1) - word1_itr - 1 >= -1):
+        # if abs(indel_count) > MAXINDELS:
+        #     invalid = True
+        #     break
+        mod_type = matrix[len(word2) - word2_itr - 1][len(word1) - word1_itr - 1][1]
 
 
         if mod_type == "diag":
-            
-            word2_itr -= 1
-            word1_itr -= 1
+            mod_string1.append(word1[len(word1) - word1_itr - 1])
+            mod_string2.append(word2[len(word2) - word2_itr - 1])
+
+            word2_itr += 1
+            word1_itr += 1
         elif mod_type == "in":
-            
-            indel_count += 1
-            word1_itr -= 1
-        else:
+            mod_string2.append("-")
+            mod_string1.append(word1[len(word1) - word1_itr - 1])
+               
+            word1_itr += 1
 
-            indel_count -= 1
-            word2_itr -= 1
-    
-    if not invalid:
-        mod_string1.reverse()
-        mod_string2.reverse()
-        
-        print(mod_string1)
-        print(mod_string2)
-    else:
-        print("INVALID STRING")
+        else:          
+            mod_string2.append(word2[len(word2) - word2_itr - 1])
+            mod_string1.append("-")
 
-
+            word2_itr += 1
 
 matrix = [[None for _ in word1] for itm in word2]
-
-
-# fill_matrix(matrix, 0, 0)
-# modify_string(matrix)
-
-# fill_matrix2(matrix)
-# printm2(matrix)
-# printm(matrix)
-
-# modify_string_banded(matrix)
-
-
 
 
 fill_matrix2(matrix)
