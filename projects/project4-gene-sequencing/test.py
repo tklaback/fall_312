@@ -241,9 +241,6 @@ def modify_string2(matrix):
 
     
     while (len(word2) - word2_itr - 1 >= -1 if longest[1] == "2" else len(word1) - word1_itr - 1 >= -1):
-        # if abs(indel_count) > MAXINDELS:
-        #     invalid = True
-        #     break
         mod_type = matrix[len(word2) - word2_itr - 1][len(word1) - word1_itr - 1][1]
 
 
@@ -265,13 +262,61 @@ def modify_string2(matrix):
 
             word2_itr += 1
 
-matrix = [[None for _ in word1] for itm in word2]
+def modify_string2_banded(matrix):
+    mod_string1 = []
+    mod_string2 = []
 
+    word2_itr = 0
+    word1_itr = 0
+
+    longest = sorted([(len(word1), '1'), (len(word2), '2')], key=lambda x:x[0])[1]
+
+    indel_count = 0
+    invalid = False
+
+    while (len(word2) - word2_itr - 1 >= 0 if longest[1] == "2" else len(word1) - word1_itr - 1 >= 0):
+        if abs(indel_count) > MAXINDELS:
+            invalid = True
+            break
+        mod_type = matrix[len(word2) - word2_itr - 1][len(word1) - word1_itr - 1][1]
+
+
+        if mod_type == "diag":
+            mod_string1.append(word1[len(word1) - word1_itr - 1])
+            mod_string2.append(word2[len(word2) - word2_itr - 1])
+
+            word2_itr += 1
+            word1_itr += 1
+        elif mod_type == "in":
+            mod_string2.append("-")
+            mod_string1.append(word1[len(word1) - word1_itr - 1])
+
+            indel_count += 1
+            word1_itr += 1
+
+        else:          
+            mod_string2.append(word2[len(word2) - word2_itr - 1])
+            mod_string1.append("-")
+            indel_count -= 1
+
+            word2_itr += 1
+
+    if not invalid:
+        mod_string1.reverse()
+        mod_string2.reverse()
+        
+        print(mod_string1)
+        print(mod_string2)
+    else:
+        print("INVALID STRING")
+    
+
+matrix = [[None for _ in word1] for itm in word2]
 
 fill_matrix2(matrix)
 printm2(matrix)
 
-modify_string2(matrix)
+modify_string2_banded(matrix)
 
 # When breaking ties, make sure to take into account what will be added to the number that you 
 # are drawing from: 
